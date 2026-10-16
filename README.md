@@ -2,9 +2,9 @@
 
 Mailbox is a full-stack, Gmail-style email client. A React single-page app talks to a REST API built with Node.js and Express, which stores everything in PostgreSQL using raw, parameterized SQL (no ORM). You can browse the inbox, sent, starred, trash and label views, search, read, star and trash emails, compose new ones, and act on many emails at once. The database is seeded with 100,000 realistic emails. A composite index makes the inbox query about 100× faster (14.16 ms to 0.138 ms), measured with `EXPLAIN ANALYZE`, and 29 Jest + Supertest tests cover the API, including a test proving one user can never read another user's mail.
 
-![Mailbox screenshot](docs/screenshot.png)
+![Mailbox screenshot](docs/screenshot.jpg)
 
-**Live demo:** https://YOUR-APP.vercel.app · **API:** https://YOUR-API.onrender.com/api/health
+**Live demo:** https://mailbox-kohl.vercel.app · **API:** https://mailbox-api-0gx7.onrender.com/api/health
 
 > The API runs on Render's free tier, which sleeps after 15 minutes without traffic. The first request after that can take around 30 seconds while it wakes up; after that it's fast.
 
@@ -51,7 +51,7 @@ Mailbox is a full-stack, Gmail-style email client. A React single-page app talks
 You need Node.js 20+ and a PostgreSQL database: either Docker (`docker compose up -d` starts Postgres 16 and the defaults in `.env.example` already match it) or a free [Neon](https://neon.tech) database, whose connection strings go into `server/.env`.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/mailbox.git && cd mailbox
+git clone https://github.com/ayush16naudiyal-cmyk/mailbox.git && cd mailbox
 cp server/.env.example server/.env        # then edit DATABASE_URL and DATABASE_URL_TEST
 npm --prefix server install
 npm --prefix server run db:reset          # creates the tables and seeds 100,000 emails
