@@ -35,6 +35,11 @@ export default function MailboxPage({ view }) {
     mailVersion
   );
 
+  // e.g. "Inbox – Mailbox" or "exam – Inbox – Mailbox" in the browser tab.
+  useEffect(() => {
+    document.title = q ? `${q} – ${title} – Mailbox` : `${title} – Mailbox`;
+  }, [q, title]);
+
   // Ids of the ticked rows. Cleared when you move to another page, search or label.
   const [selectedIds, setSelectedIds] = useState([]);
   useEffect(() => {

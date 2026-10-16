@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useDebounce } from '../hooks/useDebounce.js';
 
-export default function TopBar({ me }) {
+export default function TopBar({ me, menuOpen, onMenuClick }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,8 +45,20 @@ export default function TopBar({ me }) {
 
   return (
     <header className="topbar">
+      {/* Only visible on small screens (see CSS); opens the sidebar drawer. */}
+      <button
+        id="menu-button"
+        type="button"
+        className="icon-button menu-button"
+        onClick={onMenuClick}
+        aria-label="Menu"
+        aria-expanded={menuOpen}
+        aria-controls="sidebar"
+      >
+        ☰
+      </button>
       <Link to="/inbox" className="brand">
-        ✉️ Mailbox
+        ✉️ <span className="brand-text">Mailbox</span>
       </Link>
 
       <form className="search" role="search" onSubmit={(event) => event.preventDefault()}>

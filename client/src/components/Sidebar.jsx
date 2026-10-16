@@ -6,16 +6,51 @@ function Count({ value }) {
   return <span className="nav-count">{value.toLocaleString()}</span>;
 }
 
-export default function Sidebar({ inboxUnread, labels, onCompose }) {
+// labels is null while loading, and labelsError is true if loading failed.
+function LabelList({ labels, labelsError, onRetryLabels }) {
+  if (labelsError) {
+    return (
+      <p className="nav-message">
+        Couldn't load labels.{' '}
+        <button type="button" className="link-button" onClick={onRetryLabels}>
+          Retry
+        </button>
+      </p>
+    );
+  }
+  if (labels === null) {
+    return <p className="nav-message">Loading…</p>;
+  }
+  if (labels.length === 0) {
+    return <p className="nav-message">No labels yet.</p>;
+  }
+
   return (
-    <nav className="sidebar" aria-label="Mailbox folders">
+    <ul className="nav-list">
+      {labels.map((label) => (
+        <li key={label.id}>
+          <NavLink to={`/label/${label.id}`} className="nav-link">
+            <span>{label.name}</span>
+            <Count value={label.unread_count} />
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// On desktop this is a normal column. Under 768px the CSS turns it into a
+// slide-in drawer, shown when the layout adds the "drawer-open" class.
+export default function Sidebar({ inboxUnread, labels, labelsError, onRetryLabels, onCompose }) {
+  return (
+    <nav id="sidebar" className="sidebar" aria-label="Mailbox folders">
       <button type="button" className="button button-primary compose-button" onClick={onCompose}>
         ✏️ Compose
       </button>
 
       <ul className="nav-list">
         <li>
-          {/* NavLink adds the "active" class when its route is the current page. */}
+          {/* NavLink adds the "active" class and aria-current="page" on the current page. */}
           <NavLink to="/inbox" className="nav-link">
             <span>Inbox</span>
             <Count value={inboxUnread} />
@@ -33,16 +68,7 @@ export default function Sidebar({ inboxUnread, labels, onCompose }) {
       </ul>
 
       <h2 className="nav-heading">Labels</h2>
-      <ul className="nav-list">
-        {labels.map((label) => (
-          <li key={label.id}>
-            <NavLink to={`/label/${label.id}`} className="nav-link">
-              <span>{label.name}</span>
-              <Count value={label.unread_count} />
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+      <LabelList labels={labels} labelsError={labelsError} onRetryLabels={onRetryLabels} />
     </nav>
   );
 }

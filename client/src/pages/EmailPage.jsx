@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router';
 import { api } from '../api.js';
-import { ErrorState, LoadingState } from '../components/States.jsx';
+import { EmptyState, ErrorState, LoadingState } from '../components/States.jsx';
 import { formatFullDate } from '../utils/formatDate.js';
 
 export default function EmailPage() {
@@ -34,7 +34,7 @@ export default function EmailPage() {
         }
       })
       .catch((err) => {
-        if (!ignore) setError(err.message);
+        if (!ignore) setError(err);
       })
       .finally(() => {
         if (!ignore) setLoading(false);
@@ -44,6 +44,11 @@ export default function EmailPage() {
       ignore = true;
     };
   }, [id, reloadCount, refreshCounts]);
+
+  // The browser tab shows the subject, which also helps screen reader users know where they are.
+  useEffect(() => {
+    if (email) document.title = `${email.subject} – Mailbox`;
+  }, [email]);
 
   function goBack() {
     // location.key is "default" when this is the first page loaded (e.g. opened
@@ -112,7 +117,12 @@ export default function EmailPage() {
   if (error) {
     return (
       <section className="email-view">
-        <ErrorState message={error} onRetry={() => setReloadCount((c) => c + 1)} />
+        {/* Retrying can't fix a 404, so it gets a plain message instead of "Try again". */}
+        {error.status === 404 ? (
+          <EmptyState title="Email not found" message="It may have been deleted, or the link is wrong." />
+        ) : (
+          <ErrorState message={error.message} onRetry={() => setReloadCount((c) => c + 1)} />
+        )}
         <div className="email-view-back">
           <button type="button" className="button" onClick={goBack}>
             ← Back

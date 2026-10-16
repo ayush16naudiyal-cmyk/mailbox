@@ -592,6 +592,26 @@ button:disabled {
   padding: 2px 8px;
 }
 
+/* ---------- Small helpers ---------- */
+.menu-button,
+.drawer-overlay {
+  display: none; /* only used on small screens, see the media query below */
+}
+
+.nav-message {
+  padding: 4px 14px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
 /* ---------- Loading / error / empty ---------- */
 .state {
   display: flex;
@@ -629,5 +649,167 @@ button:disabled {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ---------- Small screens (under 768px) ---------- */
+@media (max-width: 767px) {
+  /* One column: the sidebar leaves the grid and becomes a drawer. */
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'topbar'
+      'main';
+  }
+
+  .topbar {
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .menu-button {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    width: auto;
+  }
+
+  .user {
+    display: none;
+  }
+
+  /* The drawer sits off-screen to the left until .drawer-open slides it in.
+     visibility: hidden also stops keyboard users tabbing into it while closed. */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 30;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--color-surface);
+    box-shadow: 4px 0 24px rgba(16, 24, 40, 0.2);
+    transform: translateX(-100%);
+    visibility: hidden;
+    /* Closing: slide out first, then hide (the 0.2s delay on visibility). */
+    transition:
+      transform 0.2s ease,
+      visibility 0s linear 0.2s;
+  }
+
+  .drawer-open .sidebar {
+    transform: translateX(0);
+    visibility: visible;
+    /* Opening: become visible at once, so focus can move into the drawer. */
+    transition:
+      transform 0.2s ease,
+      visibility 0s;
+  }
+
+  .drawer-open .drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgba(16, 24, 40, 0.4);
+  }
+
+  .main {
+    padding: 8px;
+  }
+
+  .mailbox-header {
+    padding: 8px 12px;
+  }
+
+  /* Rows become two lines: sender and date on top, subject and snippet below. */
+  .email-row .email-link {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'sender date'
+      'text text';
+    gap: 0 8px;
+    padding: 10px 12px 10px 4px;
+  }
+
+  .email-sender {
+    grid-area: sender;
+  }
+
+  .email-date {
+    grid-area: date;
+  }
+
+  .email-text {
+    grid-area: text;
+    font-size: 14px;
+  }
+
+  .row-checkbox {
+    margin-left: 12px;
+  }
+
+  .email-row .star-button {
+    margin-left: 0;
+  }
+
+  .bulk-actions .button {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .email-view {
+    padding: 12px 16px 24px;
+  }
+
+  .email-view-subject {
+    font-size: 19px;
+  }
+
+  /* Compose fills the whole screen on phones. */
+  .compose {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .compose .field-grow {
+    flex: 1;
+  }
+
+  .compose .field-grow textarea {
+    flex: 1;
+    resize: none;
+  }
+
+  .toast {
+    max-width: calc(100vw - 32px);
+    white-space: normal;
+  }
+}
+
+/* Very narrow phones: show only the envelope, to leave room for search. */
+@media (max-width: 400px) {
+  .brand-text {
+    display: none;
+  }
+}
+
+/* Respect the "reduce motion" accessibility setting. */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
+  }
+
+  .spinner {
+    animation-duration: 2s;
   }
 }

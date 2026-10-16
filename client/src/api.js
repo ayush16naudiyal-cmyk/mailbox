@@ -30,7 +30,9 @@ export async function api(path, { method = 'GET', body } = {}) {
 
   // fetch() does NOT throw on 4xx/5xx, so we have to check ourselves.
   if (!response.ok) {
-    throw new Error(data?.error?.message || `Request failed with status ${response.status}`);
+    const error = new Error(data?.error?.message || `Request failed with status ${response.status}`);
+    error.status = response.status; // lets a page treat 404 differently from other errors
+    throw error;
   }
 
   return data;
