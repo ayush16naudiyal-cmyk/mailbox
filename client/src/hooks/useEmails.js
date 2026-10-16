@@ -3,8 +3,9 @@ import { api } from '../api.js';
 
 // Loads one page of emails for the given filters, e.g.
 //   useEmails({ folder: 'inbox', page: 2, q: 'exam' })
-// and re-fetches whenever the filters change.
-export function useEmails(filters) {
+// and re-fetches whenever the filters change, or when refreshKey changes
+// (the layout bumps it after an email is sent).
+export function useEmails(filters, refreshKey = 0) {
   // Turn the filters into a query string, skipping empty ones. Using the string
   // as the effect dependency means a new-but-equal filters object won't refetch.
   const query = new URLSearchParams(
@@ -46,7 +47,7 @@ export function useEmails(filters) {
     return () => {
       ignore = true;
     };
-  }, [query, reloadCount]);
+  }, [query, reloadCount, refreshKey]);
 
   return {
     emails,

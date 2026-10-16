@@ -6,9 +6,13 @@ function Count({ value }) {
   return <span className="nav-count">{value.toLocaleString()}</span>;
 }
 
-export default function Sidebar({ inboxUnread, labels }) {
+export default function Sidebar({ inboxUnread, labels, onCompose }) {
   return (
     <nav className="sidebar" aria-label="Mailbox folders">
+      <button type="button" className="button button-primary compose-button" onClick={onCompose}>
+        ✏️ Compose
+      </button>
+
       <ul className="nav-list">
         <li>
           {/* NavLink adds the "active" class when its route is the current page. */}

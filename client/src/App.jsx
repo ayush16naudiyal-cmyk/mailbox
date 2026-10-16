@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router';
 import Layout from './components/Layout.jsx';
 import MailboxPage from './pages/MailboxPage.jsx';
+import EmailPage from './pages/EmailPage.jsx';
 import { EmptyState } from './components/States.jsx';
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="sent" element={<MailboxPage key="sent" view="sent" />} />
         <Route path="trash" element={<MailboxPage key="trash" view="trash" />} />
         <Route path="label/:labelId" element={<MailboxPage key="label" view="label" />} />
+        <Route path="email/:id" element={<EmailPage />} />
         <Route path="*" element={<EmptyState title="Page not found" message="That page doesn't exist." />} />
       </Route>
     </Routes>
