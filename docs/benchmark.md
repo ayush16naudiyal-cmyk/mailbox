@@ -26,13 +26,13 @@ CREATE INDEX idx_emails_user_folder_created ON emails (user_id, folder, created_
 
 | | Without index | With index |
 |---|---|---|
-| Median execution time (5 runs) | 13.828 ms | 0.124 ms |
-| All runs (ms) | 12.913, 13.828, 13.856, 14.215, 13.193 | 0.126, 0.105, 0.114, 0.161, 0.124 |
+| Median execution time (5 runs) | 14.158 ms | 0.138 ms |
+| All runs (ms) | 13.804, 14.663, 14.331, 13.939, 14.158 | 0.144, 0.138, 0.145, 0.109, 0.106 |
 | Seq Scan on emails | yes | no |
 | Index Scan using idx_emails_user_folder_created | no | yes |
 | Separate Sort step | yes | no |
 
-Median went from 13.828 ms to 0.124 ms (112x faster). Plan changed from Seq Scan to Index Scan: yes.
+Median went from 14.158 ms to 0.138 ms (103x faster). Plan changed from Seq Scan to Index Scan: yes.
 
 Times are Postgres's own `Execution Time` from `EXPLAIN (ANALYZE, BUFFERS)`, so they don't include network latency. The median of 5 runs is used so a single slow (cold-cache) run doesn't skew the result.
 
@@ -47,29 +47,29 @@ An index is like a phone book: sorted by the first column, then the second, then
 ## Query plan without the index
 
 ```
-Limit  (cost=7264.04..7264.09 rows=20 width=150) (actual time=13.151..13.157 rows=20.00 loops=1)
+Limit  (cost=7263.98..7264.03 rows=20 width=150) (actual time=14.118..14.124 rows=20.00 loops=1)
   Buffers: shared hit=5703
-  ->  Sort  (cost=7264.04..7269.29 rows=2097 width=150) (actual time=13.149..13.153 rows=20.00 loops=1)
+  ->  Sort  (cost=7263.98..7269.22 rows=2095 width=150) (actual time=14.116..14.120 rows=20.00 loops=1)
         Sort Key: created_at DESC
         Sort Method: top-N heapsort  Memory: 34kB
         Buffers: shared hit=5703
-        ->  Seq Scan on emails  (cost=0.00..7208.24 rows=2097 width=150) (actual time=0.016..12.672 rows=2075.00 loops=1)
+        ->  Seq Scan on emails  (cost=0.00..7208.24 rows=2095 width=150) (actual time=0.018..13.629 rows=2075.00 loops=1)
               Filter: ((user_id = 1) AND (folder = 'inbox'::text))
               Rows Removed by Filter: 97925
               Buffers: shared hit=5703
-Planning Time: 0.080 ms
-Execution Time: 13.193 ms
+Planning Time: 0.077 ms
+Execution Time: 14.158 ms
 ```
 
 ## Query plan with the index
 
 ```
-Limit  (cost=0.42..68.35 rows=20 width=150) (actual time=0.035..0.095 rows=20.00 loops=1)
+Limit  (cost=0.42..68.52 rows=20 width=150) (actual time=0.034..0.077 rows=20.00 loops=1)
   Buffers: shared hit=23
-  ->  Index Scan using idx_emails_user_folder_created on emails  (cost=0.42..7214.80 rows=2124 width=150) (actual time=0.034..0.091 rows=20.00 loops=1)
+  ->  Index Scan using idx_emails_user_folder_created on emails  (cost=0.42..7140.64 rows=2097 width=150) (actual time=0.033..0.074 rows=20.00 loops=1)
         Index Cond: ((user_id = 1) AND (folder = 'inbox'::text))
         Index Searches: 1
         Buffers: shared hit=23
-Planning Time: 0.101 ms
-Execution Time: 0.124 ms
+Planning Time: 0.092 ms
+Execution Time: 0.106 ms
 ```
